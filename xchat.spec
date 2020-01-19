@@ -3,7 +3,7 @@
 Summary:   A popular and easy to use graphical IRC (chat) client
 Name:      xchat
 Version:   2.8.8
-Release:   22%{?dist}
+Release:   23%{?dist}
 Epoch:     1
 Group:     Applications/Internet
 License:   GPLv2+
@@ -51,6 +51,8 @@ Patch55: xchat-2.8.8-hires-icons.patch
 Patch56: xchat-2.8.8-xdg-dirs.patch
 # http://sourceforge.net/p/xchat/bugs/1397/
 Patch57: xchat-2.8.8-desktop-file-name.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1091544
+Patch58: 0001-Don-t-force-the-use-of-SSLv3.patch
 
 BuildRequires: perl perl(ExtUtils::Embed) python-devel openssl-devel pkgconfig, tcl-devel
 BuildRequires: GConf2-devel
@@ -112,6 +114,7 @@ This package contains the X-Chat plugin providing the Tcl scripting interface.
 %patch55 -p1 -b .hires-icons
 %patch56 -p1 -b .xdg-dirs
 %patch57 -p1 -b .desktop-file-name
+%patch58 -p1 -b .allow-tls
 
 sed -i -e 's/#define GTK_DISABLE_DEPRECATED//g' src/fe-gtk/*.c
 
@@ -213,6 +216,10 @@ fi
 %{_libdir}/xchat/plugins/tcl.so
 
 %changelog
+* Mon May 18 2014 Debarshi Ray <rishi@fedoraproject.org> - 1:2.8.8-23
+- Do not force SSLv3, also allow TLSv1_X
+Resolves: #1198317
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1:2.8.8-22
 - Mass rebuild 2014-01-24
 
@@ -257,10 +264,10 @@ fi
 * Fri Jun 17 2011 Marcela Mašláňová <mmaslano@redhat.com> - 1:2.8.8-10
 - Perl mass rebuild
 
-* Tue Apr  7 2011 Christopher Aillon <caillon@redhat.com> - 1:2.8.8-9
+* Thu Apr 07 2011 Christopher Aillon <caillon@redhat.com> - 1:2.8.8-9
 - Link against libnotify (#693362)
 
-* Tue Apr  7 2011 Christopher Aillon <caillon@redhat.com> - 1:2.8.8-8
+* Thu Apr 07 2011 Christopher Aillon <caillon@redhat.com> - 1:2.8.8-8
 - Update the dynamic libnotify check for the newer soname (#693362)
 
 * Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:2.8.8-7
