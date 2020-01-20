@@ -3,7 +3,7 @@
 Summary:   A popular and easy to use graphical IRC (chat) client
 Name:      xchat
 Version:   2.8.8
-Release:   23%{?dist}
+Release:   24%{?dist}
 Epoch:     1
 Group:     Applications/Internet
 License:   GPLv2+
@@ -53,6 +53,8 @@ Patch56: xchat-2.8.8-xdg-dirs.patch
 Patch57: xchat-2.8.8-desktop-file-name.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1091544
 Patch58: 0001-Don-t-force-the-use-of-SSLv3.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1544840
+Patch59: xchat-2.8.8-restore-status-icon.patch
 
 BuildRequires: perl perl(ExtUtils::Embed) python-devel openssl-devel pkgconfig, tcl-devel
 BuildRequires: GConf2-devel
@@ -115,6 +117,7 @@ This package contains the X-Chat plugin providing the Tcl scripting interface.
 %patch56 -p1 -b .xdg-dirs
 %patch57 -p1 -b .desktop-file-name
 %patch58 -p1 -b .allow-tls
+%patch59 -p1 -b .restore-status-icon
 
 sed -i -e 's/#define GTK_DISABLE_DEPRECATED//g' src/fe-gtk/*.c
 
@@ -216,7 +219,11 @@ fi
 %{_libdir}/xchat/plugins/tcl.so
 
 %changelog
-* Mon May 18 2014 Debarshi Ray <rishi@fedoraproject.org> - 1:2.8.8-23
+* Wed Mar 20 2019 Debarshi Ray <rishi@fedoraproject.org> - 1:2.8.8-24
+- Restore the status icon after resuming from suspend
+Resolves: #1544840
+
+* Mon May 18 2015 Debarshi Ray <rishi@fedoraproject.org> - 1:2.8.8-23
 - Do not force SSLv3, also allow TLSv1_X
 Resolves: #1198317
 

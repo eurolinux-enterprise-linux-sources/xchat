@@ -1,0 +1,61 @@
+diff -urNp xchat-2.8.8/src/fe-gtk/plugin-tray.c xchat-2.8.8-restore-status-icon/src/fe-gtk/plugin-tray.c
+--- xchat-2.8.8/src/fe-gtk/plugin-tray.c	2010-05-16 03:37:01.000000000 +0200
++++ xchat-2.8.8-restore-status-icon/src/fe-gtk/plugin-tray.c	2019-03-20 18:51:30.837752123 +0100
+@@ -55,9 +55,13 @@ static int tray_priv_count = 0;
+ static int tray_pub_count = 0;
+ static int tray_hilight_count = 0;
+ static int tray_file_count = 0;
++static int tray_restore_timer = 0;
+ 
+ 
+ void tray_apply_setup (void);
++static gboolean tray_menu_try_restore (void);
++static void tray_cleanup (void);
++static void tray_init (void);
+ 
+ 
+ static WinStatus
+@@ -487,6 +491,34 @@ tray_menu_restore_cb (GtkWidget *item, g
+ }
+ 
+ static void
++tray_menu_notify_cb (GObject *tray, GParamSpec *pspec, gpointer user_data)
++{
++	if (sticon)
++	{
++		if (!gtk_status_icon_is_embedded (sticon))
++		{
++			tray_restore_timer = g_timeout_add (500, (GSourceFunc)tray_menu_try_restore, NULL);
++		}
++		else
++		{
++			if (tray_restore_timer)
++			{
++				g_source_remove (tray_restore_timer);
++				tray_restore_timer = 0;
++			}
++		}
++	}
++}
++
++static gboolean
++tray_menu_try_restore (void)
++{
++	tray_cleanup ();
++	tray_init ();
++	return TRUE;
++}
++
++static void
+ tray_menu_quit_cb (GtkWidget *item, gpointer userdata)
+ {
+ 	mg_open_quit_dialog (FALSE);
+@@ -636,6 +668,8 @@ tray_init (void)
+ 							G_CALLBACK (tray_menu_cb), sticon);
+ 	g_signal_connect (G_OBJECT (sticon), "activate",
+ 							G_CALLBACK (tray_menu_restore_cb), NULL);
++	g_signal_connect (G_OBJECT (sticon), "notify_embedded",
++							G_CALLBACK (tray_menu_notify_cb), NULL);
+ }
+ 
+ static int
